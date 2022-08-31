@@ -1,0 +1,7 @@
+#!/bin/python3
+
+training_image_url = http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+training_labels_url = http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+
+def prepareDirectory():
+

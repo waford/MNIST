@@ -1,0 +1,25 @@
+#!/bin/python3
+
+import os
+import urllib.request
+
+training_dir = ""
+test_dir = ""
+training_image_url = "http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz"
+training_labels_url = "http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz"
+
+def prepareDirectory():
+    cwd = os.getcwd()
+    datadir = os.path.join(cwd, "data")
+    training_dir = os.path.join(datadir, "train")
+    test_dir = os.path.join(datadir, "test")
+    os.makedirs(training_dir, exist_ok=True)
+    os.makedirs(test_dir, exist_ok=True)
+    
+def downloadFiles(url):
+    filename = url.split('\\')[-1]
+    urllib.request.urlretrieve(
+    
+
+if __name__ == "__main__":
+    prepareDirectory()

@@ -1,6 +1,7 @@
-cmake_minimum_required(VERSION 3.23)
+cmake_minimum_required(VERSION 3.22)
 project(eigen_test)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS CACHE BOOL ON)
 set(CMAKE_CXX_STANDARD 23)
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)

@@ -13,11 +13,10 @@ class MNISTDataset {
     public:
         MNISTDataset(std::string name, std::string image_url, std::string label_url);
     private:
-        static const std::string kDatasetDirectory = "datasets";
+        inline static const std::string kDatasetDirectory = "datasets";
         std::vector<MNISTImage> MNISTImages;
 
         static void touchDatasetDirectory(std::string name);
 };
-
 
 #endif //EIGEN_TEST_MNISTDATASET_HPP

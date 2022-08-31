@@ -7,15 +7,15 @@
 #include <curl/curl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/types.h>
 
 MNISTDataset::MNISTDataset(std::string name, std::string image_url, std::string label_url) {
     touchDatasetDirectory(name);
-    CURL *curl = curl_easy_init();
 }
 
 void MNISTDataset::touchDatasetDirectory(std::string name) {
-    struct stat dir_stat;
-    if(!stat(kDatasetDirectory, dir_stat)) {
-
-    }
+    // First ensure that the dataests directory exists
+    mkdir(kDatasetDirectory.c_str(),  S_IRWXG | S_IRWXU);
+    //Then ensure that the specified directory exists
+    mkdir((kDatasetDirectory + "/" + name).c_str(), S_IRWXG | S_IRWXU);
 }

@@ -2,24 +2,57 @@
 
 import os
 import urllib.request
+import gzip
 
-training_dir = ""
-test_dir = ""
 training_image_url = "http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz"
 training_labels_url = "http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz"
-
-def prepareDirectory():
-    cwd = os.getcwd()
-    datadir = os.path.join(cwd, "data")
-    training_dir = os.path.join(datadir, "train")
-    test_dir = os.path.join(datadir, "test")
-    os.makedirs(training_dir, exist_ok=True)
-    os.makedirs(test_dir, exist_ok=True)
+test_image_url = "http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz"
+test_labels_url = "http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz"
     
-def downloadFiles(url):
-    filename = url.split('\\')[-1]
-    urllib.request.urlretrieve(
+def downloadFile(filepath, url):
+    with open(filepath, "wb") as fd:
+        response =  urllib.request.urlopen(url)
+        data = response.read()
+        fd.write(data)
     
+def extractFilepathFromUrl(target_dir, url):
+    filename =  url.split('/')[-1]
+    filepath = os.path.join(target_dir, filename)
+    return filepath
 
-if __name__ == "__main__":
-    prepareDirectory()
+def downloadTrainingData(image_path, label_path):
+    downloadFile(image_path, training_image_url)
+    downloadFile(label_path, training_labels_url)
+
+def downloadTestData(image_path, label_path):
+    downloadFile(image_path, test_image_url)
+    downloadFile(label_path, test_labels_url)
+
+def unzipFile(filepath):
+    uncompressed_filepath =  filepath.split(".")[0]    
+    with gzip.open(filepath) as gfd:
+        with open(uncompressed_filepath, "wb") as fd:
+            fd.write(gfd.read())
+    os.remove(filepath) 
+
+cwd = os.getcwd()
+datadir = os.path.join(cwd, "data")
+training_dir = os.path.join(datadir, "train")
+test_dir = os.path.join(datadir, "test")
+os.makedirs(training_dir, exist_ok=True)
+os.makedirs(test_dir, exist_ok=True)
+
+training_image_file = extractFilepathFromUrl(training_dir, training_image_url)
+training_label_file = extractFilepathFromUrl(training_dir, training_labels_url)
+test_image_file = extractFilepathFromUrl(test_dir, test_image_url)
+test_label_file = extractFilepathFromUrl(test_dir, test_labels_url)
+
+
+downloadTrainingData(training_image_file, training_label_file)
+downloadTestData(test_image_file, test_label_file)
+
+unzipFile(training_image_file)
+unzipFile(training_label_file)
+unzipFile(test_image_file)
+unzipFile(test_label_file)
+

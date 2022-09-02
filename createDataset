@@ -36,7 +36,8 @@ def unzipFile(filepath):
     os.remove(filepath) 
 
 cwd = os.getcwd()
-datadir = os.path.join(cwd, "data")
+build_dir = os.path.join(cwd, "build")
+datadir = os.path.join(build_dir, "data")
 training_dir = os.path.join(datadir, "train")
 test_dir = os.path.join(datadir, "test")
 os.makedirs(training_dir, exist_ok=True)

@@ -4,65 +4,66 @@
 
 #include "MNISTDataset.hpp"
 
+#include <string>
 #include <assert.h>
-#include <curl/curl.h>
+#include <iostream>
+#include <fstream>
+#include <filesystem>
 #include <stdio.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 #include <unistd.h>
 
-MNISTDataset::MNISTDataset(std::string name, std::string imageURL, std::string labelURL):
+namespace fs = std::filesystem;
+
+MNISTDataset::MNISTDataset(std::string name):
     datasetName(name),
-    imageURL(imageURL),
-    labelURL(labelURL),
     directoryPath(kDatasetDirectory + "/" + datasetName)
 {   
     init();
 }
 
 void MNISTDataset::init() {
-    CURL *curl;
-    CURLcode res;
-
-    std::string imageFilename = buildFilename(imageURL);
-    std::string labelFilename = buildFilename(labelURL);
-
-    touchDatasetDirectory(datasetName);
-
-    curl = curl_easy_init();
-    curlURL(curl, imageFilename, imageURL);
-    curlURL(curl, labelFilename, labelURL);
-    curl_easy_cleanup(curl);
-}
-
-void MNISTDataset::curlURL(CURL *curl, std::string filename, std::string url) {
-    CURLcode response;
-    FILE *dataFile = fopen((directoryPath + "/" + filename).c_str(), "w") ;
-    if(curl && dataFile) {
-        curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *) dataFile);
-
-        response = curl_easy_perform(curl);
-        assert(response == CURLE_OK);
-   }
-}
-
-std::string MNISTDataset::buildFilename(std::string url) {
-    size_t last_split = url.find_last_of("/");
-    size_t penultimate_split;
-    if(last_split != url.length() - 1) {
-        // Pretend that there is a slash 
-        penultimate_split = last_split;
-        last_split = url.length();
-    } else {
-        penultimate_split = url.substr(0, last_split).find_last_of("/");
+    for(const auto & file : fs::directory_iterator(directoryPath)) {
+        std::string filename = file.path().filename();
+        std::cout << "filename: " << filename << std::endl;
+        if(filename.find("image") != std::string::npos && !image_stream.is_open()) {
+            image_stream.open(file.path(), std::ifstream::in | std::ifstream::binary);
+        } else if (filename.find("label") != std::string::npos && !label_stream.is_open()) {
+            label_stream.open(file.path(), std::ifstream::in | std::ifstream::binary);
+        }
     }
-    return url.substr(penultimate_split + 1, last_split);
 }
 
-void MNISTDataset::touchDatasetDirectory(std::string name) {
-    // First ensure that the dataests directory exists
-    mkdir(kDatasetDirectory.c_str(),  S_IRWXG | S_IRWXU);
-    //Then ensure that the specified directory exists
-    mkdir((directoryPath).c_str(), S_IRWXG | S_IRWXU);
+void MNISTDataset::parseData() {
+    int32_t image_header[4];
+    int32_t label_header[2];
+    readBigEndianStream(image_stream, image_header, 4);
+    readBigEndianStream(label_stream, label_header, 2);
+
+    // Check magic numbers to make sure the file is the one we expect
+    assert(image_header[0] == kImageMagicNumber);
+    assert(label_header[0] == kLabelMagicNumber);
+
+    // Check that the image and label files have the same number of elements
+    assert(image_header[1] == label_header[1]);
+
+    assert(image_header[2] == 28);
+    assert(image_header[3] == 28);
+
+    uint8_t label;
+    uint8_t pixel_data[28*28];
+    for(int i = 0; i < image_header[1]; i++) {
+        label_stream.read((char *) &label, 1*sizeof(uint8_t));
+        image_stream.read((char *) pixel_data, 28*28*sizeof(uint8_t));
+        MNISTImages.emplace_back(label, pixel_data);
+    }
+    for(int i = 0; i < 500; i++) {
+        MNISTImages[i].drawImage("bmp/" + std::to_string(i) + "-" +std::to_string(MNISTImages[i].label()) + ".bmp");
+    }
+}
+
+void MNISTDataset::readBigEndianStream(std::ifstream &stream, int32_t * data, size_t num_ints) {
+    stream.read((char *) data, num_ints * sizeof(int32_t));
+    for(int i = 0; i < num_ints; i++) {
+        swapEndiness(data[i]);
+    }
 }

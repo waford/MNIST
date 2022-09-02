@@ -6,6 +6,6 @@ std::string trainingImages("http://yann.lecun.com/exdb/mnist/train-images-idx3-u
 std::string trainingLabels("http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz");
 
 int main() {
-    MNISTDataset training("train", trainingImages, trainingLabels);
-//    MNISTDataset test("test", "test_image_url", "test_label_url");
+    MNISTDataset training("train");
+    training.parseData();
 }

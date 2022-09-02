@@ -6,19 +6,29 @@
 #define EIGEN_TEST_MNISTIMAGE_HPP
 
 #include <cstdint>
+#include <string>
 #include <cstring>
+#include <stdio.h>
+#include <stdlib.h>
 
 class MNISTImage {
     public:
-        MNISTImage(uint8_t label, uint32_t* pixels) {
+        MNISTImage(uint8_t label, uint8_t* pixels) {
             label_ = label;
-            memcpy(pixels_, pixels, image_size*image_size);
+            memcpy(pixels_, pixels, kImageSize*kImageSize);
         }
 
+        uint8_t operator() (size_t row, size_t col) {
+            return pixels_[kImageSize * row + col];
+        }
+        void drawImage(std::string filename);
+
+        uint8_t label() {return label_;}
+
     private:
-        const std::size_t image_size = 28;
+        static const std::size_t kImageSize = 28;
         uint8_t label_;
-        uint32_t* pixels_;
+        uint8_t pixels_[kImageSize * kImageSize];
 };
 
 

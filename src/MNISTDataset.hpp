@@ -26,6 +26,7 @@ class MNISTDataset {
         std::vector<MNISTImage> MNISTImages;
 
         void init();
+        void drawLabeledImages(int cap);
         void parseImageStream();
         void readBigEndianStream(std::ifstream &stream, int32_t * data, size_t num_ints);
         inline void swapEndiness(int32_t & value) { 

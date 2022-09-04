@@ -56,7 +56,15 @@ void MNISTDataset::parseData() {
         image_stream.read((char *) pixel_data, 28*28*sizeof(uint8_t));
         MNISTImages.emplace_back(label, pixel_data);
     }
-    for(int i = 0; i < 500; i++) {
+    
+    // close streams
+    image_stream.close();
+    label_stream.close();
+}
+
+void MNISTDataset::drawLabeledImages(int cap) {
+    cap = std::max<int>(cap, MNISTImages.size());
+    for(int i = 0; i < cap; i++) {
         MNISTImages[i].drawImage("bmp/" + std::to_string(i) + "-" +std::to_string(MNISTImages[i].label()) + ".bmp");
     }
 }

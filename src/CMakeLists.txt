@@ -17,6 +17,7 @@ add_library(EasyBMP INTERFACE)
 target_include_directories(EasyBMP INTERFACE ${easybmp_SOURCE_DIR})
 
 add_executable(main main.cpp
+    SimpleNN.cpp
     MNISTImage.cpp
     MNISTDataset.cpp)
 

@@ -29,7 +29,7 @@ VectorXd SimpleNN::fireNetwork(VectorXd & input) {
     VectorXd & current_activations = input;
     for(std::shared_ptr<SimpleNNLayer> layer : layers_) {
         layer->activateNeurons(current_activations);
-        current_activations = layer->output();
+        current_activations = layer->activations();
     }
-    return layers_.back()->output();
+    return layers_.back()->activations();
 }

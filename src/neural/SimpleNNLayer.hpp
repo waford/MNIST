@@ -13,18 +13,17 @@ using Eigen::VectorXd;
 class SimpleNNLayer {
     public:
         SimpleNNLayer(size_t inputs, size_t outputs) : 
-            weights_(inputs, outputs),
+            weights_(outputs, inputs),
             biases_(outputs),
             weighted_input_(outputs), 
-            activations_(outputs)
+            activations_(inputs)
         {}
 
        size_t inputSize() { return weights_.cols(); }
        size_t outputSize() { return weights_.rows(); }
+       VectorXd & activations() { return activations_; }
 
-       VectorXd & output() { return activations_; }
-
-       void activateNeurons(VectorXd & input_activations) {
+       void activateNeurons(const VectorXd & input_activations) {
             weighted_input_ = weights_ * input_activations + biases_; 
             activations_ = sigmoid(weighted_input_);
         }

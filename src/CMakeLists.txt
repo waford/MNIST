@@ -1,7 +1,14 @@
 include(FetchContent)
 
-
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+
+add_subdirectory(neural)
+
+list(APPEND INCLUDES "${PROJECT_SOURCE_DIR}/src/neural")
+list(APPEND LIB 
+    Eigen3::Eigen
+    neural
+    )
 
 FetchContent_Declare(
     EasyBMP
@@ -17,10 +24,16 @@ add_library(EasyBMP INTERFACE)
 target_include_directories(EasyBMP INTERFACE ${easybmp_SOURCE_DIR})
 
 add_executable(main main.cpp
-    SimpleNN.cpp
     MNISTImage.cpp
-    MNISTDataset.cpp)
+    MNISTDataset.cpp
+    )
 
 target_link_libraries(main
-        Eigen3::Eigen
-        EasyBMP)
+        EasyBMP
+        ${LIB})
+
+target_include_directories(main PUBLIC
+        ${INCLUDES}
+        )
+
+add_subdirectory(test)

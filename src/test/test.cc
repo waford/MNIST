@@ -6,7 +6,7 @@
 #include "SimpleNN.hpp"
 
 INSTANTIATE_TEST_SUITE_P(SingleLayerTestInputOutput, SingleLayerTest, testing::Range<size_t>(1, 20));
-INSTANTIATE_TEST_SUITE_P(TwoLayerTestInputOutpt, TwoLayerTest, testing::Combine(testing::Range<size_t>(1,20), testing::Range<size_t>(1,20)));
+INSTANTIATE_TEST_SUITE_P(TwoLayerTestInputOutpt, TwoLayerTest, testing::Combine(testing::Range<size_t>(1,10), testing::Range<size_t>(1,10)));
 
 TEST_P(SingleLayerTest, InputOutput) {
     size_t layer_size = GetParam();
@@ -27,11 +27,10 @@ TEST_P(TwoLayerTest, InputOutput) {
     input_size = std::get<0>(param);
     output_size = std::get<1>(param);
 
-    SimpleNN two_layer_net({input, output}, 1);
+    SimpleNN two_layer_net({input_size, output_size}, 1);
     VectorXd inputs(input_size);
 
     VectorXd outputs = two_layer_net.fireNetwork(inputs);
 
-    ASSERT_EQ(output.rows(), output_size);
-    ASSERT_EQ(input.activations().size, input_size);
+    ASSERT_EQ(outputs.rows(), output_size);
 }

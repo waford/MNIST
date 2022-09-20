@@ -33,3 +33,14 @@ VectorXd SimpleNN::fireNetwork(VectorXd & input) {
     }
     return layers_.back()->activations();
 }
+
+// If I was doing this properly I would want to specify input and output sizes as template parameters
+void SimpleNN::evaluateNetwork(VectorXd & input, VectorXd & expected_output) {
+    const VectorXd & true_output = fireNetwork(input); 
+    
+    VectorXd output_error = (expected_output - true_output).cwiseProduct();  
+}
+
+void SimpleNN::backProp() {
+
+}

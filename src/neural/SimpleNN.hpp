@@ -16,6 +16,9 @@ class SimpleNN {
 
     private:
         std::vector<std::shared_ptr<SimpleNNLayer>> layers_;
+        void backProp();
+        void evaluateNetwork(VectorXd & input, VectorXd & expected_output);
+
         double learning_rate_;
 
         void init(std::vector<size_t> & layer_sizes);
